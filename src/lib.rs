@@ -321,7 +321,6 @@ mod tests {
 
 impl StreamDeck{
 ///Set button image on Original device
-///
 /// * `key` - Keys are 1-indexed.
 fn set_button_image_bmp_original(&mut self, key: u8, image: &[u8]) -> Result<(), Error> {
     //Based on Cliff Rowleys Stream Deck Protocol notes https://gist.github.com/cliffrowley/d18a9c4569537b195f2b1eb6c68469e0#0x02-set-key-image
@@ -341,9 +340,6 @@ fn set_button_image_bmp_original(&mut self, key: u8, image: &[u8]) -> Result<(),
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     ]);
     buff[70..7819].copy_from_slice(&image[0..7749]); //Image data //First 7749 bytes (2583 pixels)
-    //for i in (70..7819).step_by(3) { //Image data //First 7749 bytes (2583 pixels)
-    //    buff[i..i+3].copy_from_slice(&[0x79, 0x17, 0xff]); //pink
-    //}
     //for i in 7819..8191 { buff[i] = 0x00; } //Padding //I don't think padding needs to be zeroed
     self.device.write(&buff)?; //Send packet
 
@@ -352,9 +348,6 @@ fn set_button_image_bmp_original(&mut self, key: u8, image: &[u8]) -> Result<(),
     let packet = packet + 1;
     buff[..16].copy_from_slice(&[0x02, 0x01, packet, 0x00, previous_packet, key, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,]); //Header
     buff[16..7819].copy_from_slice(&image[7749..15552]); //Image data //Remaining 7803 bytes (2601 pixels) //Total image data should add up to 15552 bytes (5184 pixels)
-    //for i in (16..7819).step_by(3) { //Image data //Remaining 7803 bytes (2601 pixels) //Total image data should add up to 15552 bytes (5184 pixels)
-    //    buff[i..i+3].copy_from_slice(&[0xff, 0x17, 0x79]); //blue
-    //}
     //for i in 7819..8191 { buff[i] = 0x00; } //Padding //I don't think padding needs to be zeroed
     self.device.write(&buff)?; //Send packet
 
