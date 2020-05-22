@@ -145,8 +145,8 @@ impl StreamDeck {
 
         let _s = self.device.get_feature_report(&mut buff)?;
 
-        //TODO: from_utf8 returns Utf8Error { valid_up_to: 0, error_len: Some(1) } here, at least for ORIGINAL_V2
-        Ok(std::str::from_utf8(&buff[5..]).unwrap().to_string())
+        let offset = if self.kind.is_v2() { 6 } else { 5 };
+        Ok(std::str::from_utf8(&buff[offset..]).unwrap().to_string())
     }
 
     /// Reset the connected device
