@@ -9,7 +9,7 @@ use crate::info::{ColourOrder, Mirroring, Rotation};
 use crate::Error;
 
 /// Simple Colour object for re-writing backgrounds etc.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 #[cfg_attr(feature = "structopt", derive(structopt::StructOpt))]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct Colour {
@@ -54,6 +54,12 @@ pub struct ImageOptions {
     #[cfg_attr(feature = "structopt", structopt(long))]
     /// Invert colours
     invert: bool,
+}
+
+impl ImageOptions {
+    pub fn new(background: Option<Colour>, invert: bool) -> Self {
+        ImageOptions { background, invert }
+    }
 }
 
 impl Default for ImageOptions {
