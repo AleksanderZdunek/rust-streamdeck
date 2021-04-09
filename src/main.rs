@@ -76,7 +76,7 @@ fn main() {
     let mut config = simplelog::ConfigBuilder::new();
     config.set_time_level(LevelFilter::Off);
 
-    TermLogger::init(opts.level, config.build(), TerminalMode::Mixed).unwrap();
+    TermLogger::init(opts.level, config.build(), TerminalMode::Mixed, simplelog::ColorChoice::Auto).unwrap();
 
     // Connect to device
     let mut deck = match StreamDeck::connect(opts.filter.vid, opts.filter.pid, opts.filter.serial) {
