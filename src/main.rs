@@ -88,7 +88,7 @@ fn main() {
     };
 
     let serial = deck.serial().unwrap();
-    info!("Connected to device (vid: {:04x} pid: {:04x} serial: {})", 
+    info!("Connected to device (vid: {:04x} pid: {:04x} serial: {})",
             opts.filter.vid, opts.filter.pid, serial);
 
     // Run the command
