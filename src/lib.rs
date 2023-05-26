@@ -1,4 +1,4 @@
-use std::{io::Error as IoError};
+use std::io::Error as IoError;
 use std::time::Duration;
 
 #[macro_use]
@@ -84,9 +84,7 @@ impl DeviceImage {
 
 impl From<Vec<u8>> for DeviceImage {
     fn from(data: Vec<u8>) -> Self {
-        Self {
-            data
-        }
+        Self { data }
     }
 }
 
@@ -297,7 +295,7 @@ impl StreamDeck {
 
     /// Convert an image into the device dependent format
     fn convert_image(&self, image: Vec<u8>) -> Result<DeviceImage, Error> {
-            // Check image dimensions
+        // Check image dimensions
         if image.len() != self.kind.image_size_bytes() {
             return Err(Error::InvalidImageSize);
         }
@@ -308,7 +306,7 @@ impl StreamDeck {
                 encode_jpeg(&image, w, h)?
             }
         };
-        Ok(DeviceImage{ data: image })
+        Ok(DeviceImage { data: image })
     }
 
     /// Set a button to the provided RGB colour
@@ -384,16 +382,11 @@ impl StreamDeck {
         image: &str,
         opts: &ImageOptions,
     ) -> Result<(), Error> {
-
         self.write_button_image(key, &self.load_image(image, opts)?)
     }
 
     /// Load an image file into the device specific representation
-    pub fn load_image(
-        &self,
-        image: &str,
-        opts: &ImageOptions,
-    ) -> Result<DeviceImage, Error> {
+    pub fn load_image(&self, image: &str, opts: &ImageOptions) -> Result<DeviceImage, Error> {
         let (x, y) = self.kind.image_size();
         let rotate = self.kind.image_rotation();
         let mirror = self.kind.image_mirror();
@@ -432,7 +425,6 @@ impl StreamDeck {
     /// Writes an image to a button
     /// Image at this point in correct dimensions and in device native colour order.
     pub fn write_button_image(&mut self, key: u8, image: &DeviceImage) -> Result<(), Error> {
-
         let image = &image.data;
         let key = self.translate_key_index(key)?;
 
