@@ -13,7 +13,7 @@ util = [ "structopt", "simplelog", "humantime" ]
 default = [ "util" ]
 
 [dependencies]
-hidapi = "2.4"
+hidapi = { version = "2.4", features = ["linux-static-libusb"], default-features = false }
 log = "0.4.8"
 image = "0.25.1"
 imageproc = "0.24.0"

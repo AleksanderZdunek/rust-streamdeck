@@ -57,7 +57,6 @@ pub enum Error {
     Io(#[from] IoError),
     #[error(transparent)]
     Image(#[from] ImageError),
-
     #[error(transparent)]
     Nul(#[from] std::ffi::NulError),
 
@@ -138,40 +137,26 @@ impl StreamDeck {
         Ok(StreamDeck { device, kind })
     }
 
-    ///TODO: document me
+    ///Connect to a streamdeck device with a platform-specific path name. See dependency hidapi::HidApi::open_path().
     pub fn connect_path(device_path: &str) -> Result<StreamDeck, Error> {
         //TODO: Take optional HidApi argument?
         let api = HidApi::new()?;
-        //let device = api.open_path(&std::ffi::CString::new(device_path).expect("CString::new failed"))?;
         let device = api.open_path(&std::ffi::CString::new(device_path)?)?;
 
-        //TODO: update HidApi to latest (2.3.3?). It implements HidDevice::get_device_info() that
-        // allows us to get the pid directly by DeviceInfo::product_id().
-        let product_string = device.get_product_string()?;
-        dbg!(&product_string);
-        let kind = match product_string.unwrap().as_str() {
-            "Stream Deck MK.2" => Kind::Mk2,
-            "Stream Deck" => Kind::OriginalV2,
-            //TODO: Above probably breaks support for Original. Our original is lost so I don't know what string it reports, but I think it's identical to above.
-            //TODO: Don't know what string Mini reports.
+        let pid = device.get_device_info()?.product_id();
+        //TODO: Deduplicate code
+        let kind = match pid {
+            pids::ORIGINAL => Kind::Original,
+            pids::MINI => Kind::Mini,
+
+            pids::ORIGINAL_V2 => Kind::OriginalV2,
+            pids::XL => Kind::Xl,
+            pids::MK2 => Kind::Mk2,
+
             _ => return Err(Error::UnrecognisedPID),
         };
-        // let pid = pids::MK2; //TODO: fixme. Just assume Mk2 for now.
-        // //TODO: Deduplicate code
-        // let kind = match pid {
-        //     pids::ORIGINAL => Kind::Original,
-        //     pids::MINI => Kind::Mini,
-        //
-        //     pids::ORIGINAL_V2 => Kind::OriginalV2,
-        //     pids::XL => Kind::Xl,
-        //     pids::MK2 => Kind::Mk2,
-        //
-        //     _ => return Err(Error::UnrecognisedPID),
-        // };
-        debug!("Device info: {:?}", kind);
 
         Ok(StreamDeck { device, kind })
-        //unimplemented!("TODO: implement me");
     }
 
     /// Fetch the connected device kind
