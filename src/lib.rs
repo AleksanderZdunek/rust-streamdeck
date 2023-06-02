@@ -195,6 +195,7 @@ impl StreamDeck {
     }
 
     /// Fetch the device serial
+    //TODO: Why does the StreamDeck need to be mutable to get its serial?
     pub fn serial(&mut self) -> Result<String, Error> {
         let s = self.device.get_serial_number_string()?;
         Ok(s.unwrap())
