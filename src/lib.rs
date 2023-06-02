@@ -97,6 +97,20 @@ pub mod pids {
     pub const REVISED_MINI: u16 = 0x0090;
 }
 
+fn match_pid_to_kind(pid: u16) -> Result<Kind, Error> {
+    match pid {
+        pids::ORIGINAL => Ok(Kind::Original),
+        pids::MINI => Ok(Kind::Mini),
+
+        pids::ORIGINAL_V2 => Ok(Kind::OriginalV2),
+        pids::XL => Ok(Kind::Xl),
+        pids::MK2 => Ok(Kind::Mk2),
+        pids::REVISED_MINI => Ok(Kind::Mini),
+
+        _ => Err(Error::UnrecognisedPID),
+    }
+}
+
 impl StreamDeck {
     /// Connect to a streamdeck device
     pub fn connect(vid: u16, pid: u16, serial: Option<String>) -> Result<StreamDeck, Error> {
@@ -113,17 +127,7 @@ impl StreamDeck {
         serial: Option<String>,
     ) -> Result<StreamDeck, Error> {
         // Match info based on PID
-        let kind = match pid {
-            pids::ORIGINAL => Kind::Original,
-            pids::MINI => Kind::Mini,
-
-            pids::ORIGINAL_V2 => Kind::OriginalV2,
-            pids::XL => Kind::Xl,
-            pids::MK2 => Kind::Mk2,
-            pids::REVISED_MINI => Kind::Mini,
-
-            _ => return Err(Error::UnrecognisedPID),
-        };
+        let kind = match_pid_to_kind(pid)?;
 
         debug!("Device info: {:?}", kind);
 
@@ -144,17 +148,7 @@ impl StreamDeck {
         let device = api.open_path(&std::ffi::CString::new(device_path)?)?;
 
         let pid = device.get_device_info()?.product_id();
-        //TODO: Deduplicate code
-        let kind = match pid {
-            pids::ORIGINAL => Kind::Original,
-            pids::MINI => Kind::Mini,
-
-            pids::ORIGINAL_V2 => Kind::OriginalV2,
-            pids::XL => Kind::Xl,
-            pids::MK2 => Kind::Mk2,
-
-            _ => return Err(Error::UnrecognisedPID),
-        };
+        let kind = match_pid_to_kind(pid)?;
 
         Ok(StreamDeck { device, kind })
     }
